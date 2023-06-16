@@ -9,6 +9,30 @@
     tools:context=".SubActivity1">
 
     <Button
+        android:id="@+id/button_3"
+        android:layout_width="63dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="340dp"
+        android:layout_marginTop="168dp"
+        android:backgroundTint="#F4C639"
+        android:text="終了"
+        android:textSize="6sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_4"
+        android:layout_width="67dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="336dp"
+        android:layout_marginTop="200dp"
+        android:backgroundTint="#8BC34A"
+        android:text="グラフ"
+        android:textSize="5sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
         android:id="@+id/button_F"
         android:layout_width="69dp"
         android:layout_height="55dp"
@@ -224,8 +248,8 @@
         android:id="@+id/button_0_1"
         android:layout_width="69dp"
         android:layout_height="47dp"
-        android:layout_marginStart="280dp"
-        android:layout_marginTop="240dp"
+        android:layout_marginStart="188dp"
+        android:layout_marginTop="232dp"
         android:backgroundTint="#59A3BA"
         android:text="+10G"
         android:textSize="8sp"
@@ -234,9 +258,9 @@
 
     <EditText
         android:id="@+id/editTextNumber0"
-        android:layout_width="190dp"
-        android:layout_height="49dp"
-        android:layout_marginStart="12dp"
+        android:layout_width="152dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="240dp"
         android:ems="10"
         android:inputType="number"
@@ -248,10 +272,10 @@
 
     <TextView
         android:id="@+id/textView0"
-        android:layout_width="39dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="224dp"
-        android:layout_marginTop="256dp"
+        android:layout_width="20dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="164dp"
+        android:layout_marginTop="248dp"
         android:text="G"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
@@ -262,8 +286,8 @@
         android:id="@+id/button_0_2"
         android:layout_width="69dp"
         android:layout_height="47dp"
-        android:layout_marginStart="352dp"
-        android:layout_marginTop="240dp"
+        android:layout_marginStart="260dp"
+        android:layout_marginTop="232dp"
         android:backgroundTint="#59A3BA"
         android:text="+50G"
         android:textSize="8sp"
@@ -274,8 +298,8 @@
         android:id="@+id/button_0_3"
         android:layout_width="72dp"
         android:layout_height="47dp"
-        android:layout_marginStart="424dp"
-        android:layout_marginTop="240dp"
+        android:layout_marginStart="332dp"
+        android:layout_marginTop="232dp"
         android:backgroundTint="#59A3BA"
         android:text="+100G"
         android:textSize="8sp"
@@ -312,21 +336,22 @@
 
     <TextView
         android:id="@+id/textViewLabel1"
-        android:layout_width="73dp"
-        android:layout_height="29dp"
-        android:layout_marginStart="204dp"
+        android:layout_width="43dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="176dp"
         android:layout_marginTop="196dp"
         android:text="総合："
         android:textAlignment="center"
         android:textColor="#FFFFFF"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView1"
-        android:layout_width="74dp"
-        android:layout_height="38dp"
-        android:layout_marginStart="288dp"
+        android:layout_width="73dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="228dp"
         android:layout_marginTop="196dp"
         android:text="0"
         android:textAlignment="center"
@@ -349,9 +374,9 @@
 
     <TextView
         android:id="@+id/textViewLabel3"
-        android:layout_width="50dp"
-        android:layout_height="31dp"
-        android:layout_marginStart="204dp"
+        android:layout_width="41dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="176dp"
         android:layout_marginTop="152dp"
         android:text="RB："
         android:textAlignment="center"
@@ -361,8 +386,8 @@
 
     <TextView
         android:id="@+id/textViewLabel4"
-        android:layout_width="55dp"
-        android:layout_height="30dp"
+        android:layout_width="49dp"
+        android:layout_height="28dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="196dp"
         android:text="合算："
@@ -373,9 +398,9 @@
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="118dp"
+        android:layout_width="113dp"
         android:layout_height="30dp"
-        android:layout_marginStart="58dp"
+        android:layout_marginStart="56dp"
         android:layout_marginTop="152dp"
         android:text="0"
         android:textAlignment="viewStart"
@@ -386,9 +411,9 @@
 
     <TextView
         android:id="@+id/textView3"
-        android:layout_width="119dp"
+        android:layout_width="90dp"
         android:layout_height="30dp"
-        android:layout_marginStart="260dp"
+        android:layout_marginStart="224dp"
         android:layout_marginTop="152dp"
         android:text="0"
         android:textAlignment="viewStart"
@@ -399,9 +424,9 @@
 
     <TextView
         android:id="@+id/textView4"
-        android:layout_width="123dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="65dp"
+        android:layout_width="110dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="56dp"
         android:layout_marginTop="196dp"
         android:text="0"
         android:textAlignment="viewStart"
@@ -410,5 +435,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/button_2"
+        android:layout_width="63dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="340dp"
+        android:layout_marginTop="140dp"
+        android:backgroundTint="#EC2E6F"
+        android:text="保存"
+        android:textSize="6sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
