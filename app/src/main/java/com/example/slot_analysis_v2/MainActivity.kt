@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import android.database.sqlite.SQLiteDatabase
-import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import java.util.Date
 import java.text.SimpleDateFormat
@@ -51,6 +50,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun onClick2(v: View?) {
+        // インテントの作成
+        val intent = Intent(this, SubActivity2::class.java)
+
+        // 遷移先画面の起動
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        }
+    }
+
+    fun onClick3(v: View?) {
+        // インテントの作成
+        val intent = Intent(this, SubActivity3::class.java)
+
+        // 遷移先画面の起動
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        }
+    }
+
     private  fun nextAction(intent:Intent,db: SQLiteDatabase ){
         //DB登録項目を設定
         // 現在日時を表示
@@ -65,7 +84,9 @@ class MainActivity : AppCompatActivity() {
         val start: String = currentTime
 
         // DBへ新規レコードを登録
-        insertData(db, date, start)
+        val result = insertData(db, date, start)
+        //次画面に渡すパラメータを設定
+        intent.putExtra("PARAMETER", result.toInt());
 
         // 遷移先画面の起動
         if (intent.resolveActivity(packageManager) != null) {
@@ -73,12 +94,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun insertData(db: SQLiteDatabase, date: String, start: String) {
+    private fun insertData(db: SQLiteDatabase, date: String, start: String): Long {
 
         val values = ContentValues()
         values.put("date", date)
         values.put("start", start)
-        db.insert("result", null, values)
+        return db.insert("result", null, values)
     }
 
     private fun checkSavedata(): Boolean {

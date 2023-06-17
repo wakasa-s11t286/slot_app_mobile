@@ -9,7 +9,7 @@
     tools:context=".SubActivity1">
 
     <Button
-        android:id="@+id/button_3"
+        android:id="@+id/button_2"
         android:layout_width="63dp"
         android:layout_height="30dp"
         android:layout_marginStart="340dp"
@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button_4"
+        android:id="@+id/button_3"
         android:layout_width="67dp"
         android:layout_height="28dp"
         android:layout_marginStart="336dp"
@@ -432,18 +432,6 @@
         android:textAlignment="viewStart"
         android:textColor="#FFFFFF"
         android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/button_2"
-        android:layout_width="63dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="340dp"
-        android:layout_marginTop="140dp"
-        android:backgroundTint="#EC2E6F"
-        android:text="保存"
-        android:textSize="6sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

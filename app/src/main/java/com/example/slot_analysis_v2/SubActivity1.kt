@@ -1,7 +1,9 @@
 package com.example.slot_analysis_v2
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,8 +13,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 //var countA = 0
@@ -21,9 +26,11 @@ import java.text.DecimalFormat
 //var buttonA: Button? = null
 class SubActivity1 : AppCompatActivity() {
 
+    private lateinit var helper: DBOpenHelper
+    private lateinit var db: SQLiteDatabase
+
     //トータルG
     private var count0: Int = 0
-
     //ブドウ
     private var countA: Int = 0
     //チェリー
@@ -43,8 +50,19 @@ class SubActivity1 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sub1)
+
+        //DB（DBが存在しない場合は新規にファイルに作成）
+        helper = DBOpenHelper(applicationContext)
+        db = helper.writableDatabase
+
         df.roundingMode = RoundingMode.DOWN
 
+        //前画面（続きからor新規）で選択されたIDパラメータを受け取る
+        val intent = intent
+        val param: Int = intent.getIntExtra("PARAMETER",0)
+
+        //DBの値で復元する
+        initialCount(param)
 
         //トータルG
         val button01 = findViewById<Button>(R.id.button_0_1)
@@ -82,10 +100,16 @@ class SubActivity1 : AppCompatActivity() {
         val editTextNumberF = findViewById<EditText>(R.id.editTextNumberF) // TextViewを取得
         val textViewF = findViewById<TextView>(R.id.textViewF)
 
+        //終了ボタン
+        val button2 = findViewById<Button>(R.id.button_2) // Buttonを取得
+        //グラフボタン
+        val button3 = findViewById<Button>(R.id.button_3) // Buttonを取得
+
         val textView1 = findViewById<TextView>(R.id.textView1)
         val textView2 = findViewById<TextView>(R.id.textView2)
         val textView3 = findViewById<TextView>(R.id.textView3)
         val textView4 = findViewById<TextView>(R.id.textView4)
+
 
         //初期化
         (editTextNumber0 as TextView).text = count0.toString()
@@ -96,54 +120,62 @@ class SubActivity1 : AppCompatActivity() {
         (editTextNumberE as TextView).text = countE.toString()
         (editTextNumberF as TextView).text = countF.toString()
 
-
         //トータルGの加算
         button01.setOnClickListener {
             count0 += 10
             (editTextNumber0 as TextView).text = count0.toString()
+
         }
         button02.setOnClickListener {
             count0 += 50
             (editTextNumber0 as TextView).text = count0.toString()
+
         }
         button03.setOnClickListener {
             count0 += 100
             (editTextNumber0 as TextView).text = count0.toString()
+
         }
 
         //ブドウボタン押下時
         buttonA.setOnClickListener {
             countA += 1
             (editTextNumberA as TextView).text = countA.toString()
+
         }
         //チェリーボタン押下時
         buttonB.setOnClickListener {
             countB += 1
             (editTextNumberB as TextView).text = countB.toString()
+
         }
 
         //単独BBボタン押下時
         buttonC.setOnClickListener {
             countC += 1
             (editTextNumberC as TextView).text = countC.toString()
+
         }
 
         //単独RBボタン押下時
         buttonD.setOnClickListener {
             countD += 1
             (editTextNumberD as TextView).text = countD.toString()
+
         }
 
         //チェリーBBボタン押下時
         buttonE.setOnClickListener {
             countE += 1
             (editTextNumberE as TextView).text = countE.toString()
+
         }
 
         //チェリーRBボタン押下時
         buttonF.setOnClickListener {
             countF += 1
             (editTextNumberF as TextView).text = countF.toString()
+
         }
 
         //テキストラベルの変更時の処理(トータルG)
@@ -201,6 +233,9 @@ class SubActivity1 : AppCompatActivity() {
                 textViewD.text = textD
                 textViewE.text = textE
                 textViewF.text = textF
+
+                //DB更新
+                updateRecord(param)
             }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 //未使用
@@ -227,6 +262,8 @@ class SubActivity1 : AppCompatActivity() {
                     text = "0"
                 }
                 textViewA.text = text
+                //DB更新
+                updateRecord(param)
             }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 //未使用
@@ -254,6 +291,8 @@ class SubActivity1 : AppCompatActivity() {
                     text = "0"
                 }
                 textViewB.text = text
+                //DB更新
+                updateRecord(param)
             }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 //未使用
@@ -281,6 +320,8 @@ class SubActivity1 : AppCompatActivity() {
                     text = "0"
                 }
                 textViewC.text = text
+                //DB更新
+                updateRecord(param)
             }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 //未使用
@@ -308,6 +349,8 @@ class SubActivity1 : AppCompatActivity() {
                     text = "0"
                 }
                 textViewD.text = text
+                //DB更新
+                updateRecord(param)
             }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 //未使用
@@ -335,6 +378,8 @@ class SubActivity1 : AppCompatActivity() {
                     text = "0"
                 }
                 textViewE.text = text
+                //DB更新
+                updateRecord(param)
             }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 //未使用
@@ -362,6 +407,8 @@ class SubActivity1 : AppCompatActivity() {
                     text = "0"
                 }
                 textViewF.text = text
+                //DB更新
+                updateRecord(param)
             }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 //未使用
@@ -371,7 +418,50 @@ class SubActivity1 : AppCompatActivity() {
             }
         })
 
+        //終了ボタン押下時の処理
+        button2.setOnClickListener {
+            //もし途中のデータがある場合ダイアログ表示
+            AlertDialog.Builder(this)
+                .setTitle("警告")
+                .setMessage("実践終了しますか？")
+                .setPositiveButton("OK") { dialog, which ->
+                    //OKの場合
+                    //DBの終了時間を設定
+                    updateRecordFinish(param)
 
+                    // インテントの作成
+                    val intent = Intent(this, MainActivity::class.java)
+
+                    // TOPへ遷移
+                    if (intent.resolveActivity(packageManager) != null) {
+                        startActivity(intent)
+                    }
+
+                }
+                .setNegativeButton("Cancel") { dialog, which ->
+                    // Cancelの時は何もしない
+                }
+                .show()
+
+        }
+
+
+
+
+    }
+
+    fun onClickFinish(v: View?) {
+        //DBに終了日を設定し、トップへ戻る
+
+
+
+        // インテントの作成
+        val intent = Intent(this, MainActivity::class.java)
+
+        // 遷移先画面の起動
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        }
     }
 
 
@@ -543,6 +633,59 @@ class SubActivity1 : AppCompatActivity() {
             (addupSetting.toInt() + commonRegSetting.toInt()) / 2
         }
         totalSetting.text = total.toString()
+    }
+
+    private fun updateRecord(id:Int){
+        val values = ContentValues()
+        values.put("total", count0)
+        values.put("koyaku1", countA)
+        values.put("koyaku2", countB)
+        values.put("bb", countC)
+        values.put("rb", countD)
+        values.put("cherrybb", countE)
+        values.put("cherryrb", countF)
+
+        db.update("result",values,"id=$id",null)
+    }
+
+    private fun updateRecordFinish(id:Int){
+        //現在時間を取得
+        val formatter = SimpleDateFormat("hh:mm")
+        val currentTime = formatter.format(Date())
+        val end: String = currentTime
+
+        val values = ContentValues()
+        values.put("end", end)
+
+        db.update("result",values,"id=$id",null)
+    }
+
+    //DBから取得した内容でカウンターを初期化する
+    private fun initialCount(id:Int){
+        //DBデータをID指定で取得
+        val cursor = db.query(
+            "result", arrayOf("id","date", "total","koyaku1","koyaku2","bb","rb","cherrybb","cherryrb"),
+            "id=$id",
+            null,
+            null,
+            null,
+            null
+        )
+        cursor.moveToFirst()
+
+        if(cursor.getInt(2) != null){
+            //DBの値がNULLでなければ、各カウンターを更新
+            count0 = cursor.getInt(2)
+            countA = cursor.getInt(3)
+            countB = cursor.getInt(4)
+            countC = cursor.getInt(5)
+            countD = cursor.getInt(6)
+            countE = cursor.getInt(7)
+            countF = cursor.getInt(8)
+        }
+
+        // 忘れずに！
+        cursor.close()
     }
 
 
