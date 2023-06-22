@@ -445,24 +445,26 @@ class SubActivity1 : AppCompatActivity() {
 
         }
 
+        //グラフボタン押下時の処理
+        button3.setOnClickListener {
+            // インテントの作成
+            val intent = Intent(this, SubActivity4::class.java)
 
+            //次画面に渡すパラメータを設定
+            intent.putExtra("PARAMETER", param);
 
+            // TOPへ遷移
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivity(intent)
+            }
 
-    }
-
-    fun onClickFinish(v: View?) {
-        //DBに終了日を設定し、トップへ戻る
-
-
-
-        // インテントの作成
-        val intent = Intent(this, MainActivity::class.java)
-
-        // 遷移先画面の起動
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivity(intent)
         }
+
+
+
+
     }
+
 
 
     fun getSettingA(rate :Double): String {
