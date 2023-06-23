@@ -18,6 +18,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
     }
     fun onClick(v: View?) {
         // インテントの作成
@@ -26,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         //DB（DBが存在しない場合は新規にファイルに作成）
         helper = DBOpenHelper(applicationContext)
         db = helper.writableDatabase
+
 
         //helper.onUpgrade(db,1,2)
 
@@ -85,6 +88,10 @@ class MainActivity : AppCompatActivity() {
 
         // DBへ新規レコードを登録
         val result = insertData(db, date, start)
+
+        //詳細テーブルを登録
+        insertDetail(db,result.toInt(),start)
+
         //次画面に渡すパラメータを設定
         intent.putExtra("PARAMETER", result.toInt());
 
@@ -100,6 +107,15 @@ class MainActivity : AppCompatActivity() {
         values.put("date", date)
         values.put("start", start)
         return db.insert("result", null, values)
+    }
+
+    private fun insertDetail(db: SQLiteDatabase, resultId:Int, start: String): Long {
+
+        val values = ContentValues()
+        values.put("resultid", resultId)
+        values.put("time", start)
+        values.put("chart", "0")
+        return db.insert("detail", null, values)
     }
 
     private fun checkSavedata(): Boolean {

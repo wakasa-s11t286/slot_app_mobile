@@ -13,12 +13,19 @@ class DBOpenHelper internal constructor(context: Context?) :
         db.execSQL(
             SQL_CREATE_ENTRIES
         )
+
+        db.execSQL(
+            SQL_CREATE_ENTRIES2
+        )
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         // アップデートの判別
         db.execSQL(
             SQL_DELETE_ENTRIES
+        )
+        db.execSQL(
+            SQL_DELETE_ENTRIES2
         )
         onCreate(db)
     }
@@ -58,5 +65,18 @@ class DBOpenHelper internal constructor(context: Context?) :
                 COLUMN_NAME_9 + " INTEGER," +
                 COLUMN_NAME_10 + " INTEGER)"
         private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME
+
+        //２つ目のテーブル
+        private const val TABLE_NAME2 = "detail"
+        private const val _ID2 = "id"
+        private const val COLUMN_NAME2_1= "resultid"
+        private const val COLUMN_NAME2_2 = "time"
+        private const val COLUMN_NAME2_3 = "chart"
+        private const val SQL_CREATE_ENTRIES2 = "CREATE TABLE " + TABLE_NAME2 + " (" +
+                _ID2 + " INTEGER PRIMARY KEY," +
+                COLUMN_NAME2_1 + " INTEGER," +
+                COLUMN_NAME2_2 + " TEXT," +
+                COLUMN_NAME2_3 + " TEXT)"
+        private const val SQL_DELETE_ENTRIES2 = "DROP TABLE IF EXISTS " + TABLE_NAME2
     }
 }

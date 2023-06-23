@@ -7,17 +7,19 @@ import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Timer
+import kotlin.concurrent.schedule
+import kotlin.concurrent.scheduleAtFixedRate
 
 
 //var countA = 0
@@ -460,6 +462,14 @@ class SubActivity1 : AppCompatActivity() {
 
         }
 
+        //定期実行（７分おきに詳細(差枚）を記録）
+        Timer().scheduleAtFixedRate(0, 420000) {
+            updateDetail(param)
+        }
+        //Timer().scheduleAtFixedRate(0, 15000) {
+        //    updateDetail(param)
+        //}
+
 
 
 
@@ -662,6 +672,46 @@ class SubActivity1 : AppCompatActivity() {
         db.update("result",values,"id=$id",null)
     }
 
+    private fun updateDetail(id:Int){
+        val formatter = SimpleDateFormat("hh:mm")
+        val currentTime = formatter.format(Date())
+        val time: String = currentTime
+
+        val charts = getDetailRecord(id)
+
+        //現在の差枚を算出
+        //投資枚数
+        val investment = count0 * 3
+        //回収枚数
+        val collect1 = countA * 8
+        val collect2 = countB * 1
+        val collect3 = (countC + countE) * 240
+        val collect4 = (countD + countF) * 96
+        //差枚
+        val output = (collect1 + collect2 +collect3 + collect4) - investment
+
+        if (charts != null) {
+            if(charts.last() == output.toString()){
+                return
+            }
+
+            charts.add(output.toString())
+
+            var regist = charts.toString()
+            regist = regist.drop(1)
+            regist = regist.dropLast(1)
+            regist = regist.replace("\\s".toRegex(), "")
+            Log.i("bbbbbb", charts.toString())
+            Log.i("aaaaa", regist)
+            val values = ContentValues()
+            values.put("time", time)
+            values.put("chart", regist)
+
+            db.update("detail",values,"resultid=$id",null)
+        }
+
+    }
+
     //DBから取得した内容でカウンターを初期化する
     private fun initialCount(id:Int){
         //DBデータをID指定で取得
@@ -688,6 +738,30 @@ class SubActivity1 : AppCompatActivity() {
 
         // 忘れずに！
         cursor.close()
+    }
+
+    private fun getDetailRecord(param:Int): ArrayList<String>? {
+
+
+        //DBデータ取得
+        val cursor = db.query(
+            "detail", arrayOf("id","resultid", "time", "chart"),
+            "resultid=$param",
+            null,
+            null,
+            null,
+            null
+        )
+        cursor.moveToFirst()
+
+        val tempChart = cursor.getString(3) ?: return null
+
+        val myList:List<String>  = tempChart.split(",")
+        var arrayList = ArrayList(myList)
+
+        // 忘れずに！
+        cursor.close()
+        return arrayList
     }
 
 

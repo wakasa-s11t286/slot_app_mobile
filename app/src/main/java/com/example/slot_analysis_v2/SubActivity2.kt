@@ -165,6 +165,7 @@ class SubActivity2 : AppCompatActivity() {
     private fun deleteRecord(id:String){
         //該当のIDを削除
         db.delete("result", "id=$id", null)
+        db.delete("detail", "resultid=$id", null)
     }
 
 }
