@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.json.responseJson
 import com.github.kittinunf.result.Result
 import com.github.mikephil.charting.charts.LineChart
@@ -16,6 +17,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
+
 
 
 class SubActivity4 : AppCompatActivity() {
@@ -45,6 +47,10 @@ class SubActivity4 : AppCompatActivity() {
         //DBからデータを取得
         val resultchart = getDetailRecord(param)
 
+        if (resultchart != null) {
+            val list:ArrayList<String> = getMyAPI(resultchart) as ArrayList<String>
+            Log.i("wwww",list.toString())
+        }
 
 
 
@@ -176,7 +182,7 @@ class SubActivity4 : AppCompatActivity() {
         }
     }
 
-    private fun getMyAPI(list:ArrayList<String>){
+    private fun getMyAPI(list:ArrayList<String>): Any {
 
         //配列を文字列に変換
         var chartTxt = list.toString()
@@ -184,14 +190,31 @@ class SubActivity4 : AppCompatActivity() {
         chartTxt = chartTxt.dropLast(1)
         chartTxt = chartTxt.replace("\\s".toRegex(), "")
 
+        var resultList = ArrayList<String>()
+
+        Log.i("test",chartTxt)
         /// リクエストURL
-        //val url = "https://api.blockchain.info/stats"
-        val url = "https://wakabapg.pythonanywhere.com/hello/test?param=$chartTxt"
+        val url = "https://wakabapg.pythonanywhere.com/getchart/$chartTxt"
+        //val url = "http://127.0.0.1:5000/getchart/$chartTxt/"
         /// ヘッダー（キー・値のHashMap）
+
+        Log.i("test1",url)
         val headers = hashMapOf(
             "xxx" to "123"
         )
 
+
+        val triple = url.httpGet().response()
+        val (request, response, result) = url.httpGet().header(headers).responseJson()
+        println("start ${response.statusCode}")
+        println("start ${result.get().obj()}")
+
+
+
+
+
+
+        Log.i("test100", triple.second.data.toString())
         /// GETリクエスト送信！
         Fuel.get(url).header(headers).responseJson {
                 request, response, result ->
@@ -200,19 +223,27 @@ class SubActivity4 : AppCompatActivity() {
                 is Result.Failure -> {
                     /// リクエスト失敗・エラー
                     val ex = result.getException()
-                    //Log.d(TAG, "Failure : "+ex.toString())
+                    Log.i("eeeee", "Failure : "+ex.toString())
                 }
                 is Result.Success -> {
                     /// レスポンス正常取得
                     /// JSONObjectに変換
                     val data = result.get().obj()
-                    Log.i("TAG", "Responsed JSON : "
+                    Log.i("ccccc", "Responsed JSON : "
                             +data.toString())
+                    var tmp  = data.getJSONArray("result")
+
+                    for (i in 0 until tmp.length()) {
+                        resultList.add(tmp.getString(i))
+                    }
+
                 }
 
                 else -> {}
             }
+
         }
+        return resultList
     }
 
     //DBから詳細データを取得

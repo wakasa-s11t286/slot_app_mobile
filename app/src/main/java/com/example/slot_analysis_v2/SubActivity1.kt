@@ -462,13 +462,13 @@ class SubActivity1 : AppCompatActivity() {
 
         }
 
-        //定期実行（７分おきに詳細(差枚）を記録）
-        Timer().scheduleAtFixedRate(0, 420000) {
+        //定期実行（10.5分おきに詳細(差枚）を記録）
+        Timer().scheduleAtFixedRate(0, 15000) {
             updateDetail(param)
         }
         //Timer().scheduleAtFixedRate(0, 15000) {
         //    updateDetail(param)
-        //}
+        //}420000 630000
 
 
 
