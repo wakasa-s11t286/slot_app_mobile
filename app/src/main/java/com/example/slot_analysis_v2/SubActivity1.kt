@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -18,7 +19,6 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Timer
-import kotlin.concurrent.schedule
 import kotlin.concurrent.scheduleAtFixedRate
 
 
@@ -30,6 +30,8 @@ class SubActivity1 : AppCompatActivity() {
 
     private lateinit var helper: DBOpenHelper
     private lateinit var db: SQLiteDatabase
+
+    private val timer = Timer()
 
     //トータルG
     private var count0: Int = 0
@@ -431,6 +433,9 @@ class SubActivity1 : AppCompatActivity() {
                     //DBの終了時間を設定
                     updateRecordFinish(param)
 
+                    //タイマー破棄
+                    timer.cancel()
+
                     // インテントの作成
                     val intent = Intent(this, MainActivity::class.java)
 
@@ -452,26 +457,54 @@ class SubActivity1 : AppCompatActivity() {
             // インテントの作成
             val intent = Intent(this, SubActivity4::class.java)
 
+            //タイマー破棄
+            timer.cancel()
+
             //次画面に渡すパラメータを設定
             intent.putExtra("PARAMETER", param);
 
-            // TOPへ遷移
             if (intent.resolveActivity(packageManager) != null) {
                 startActivity(intent)
             }
 
         }
 
+
+
+
         //定期実行（10.5分おきに詳細(差枚）を記録）
-        Timer().scheduleAtFixedRate(0, 630000) {
+        timer.scheduleAtFixedRate(630000, 630000) {
+            Log.i("Timer","更新起動")
             updateDetail(param)
         }
         //Timer().scheduleAtFixedRate(0, 15000) {
         //    updateDetail(param)
-        //}15000 420000 630000
+        //}20000 420000 630000
 
 
 
+    }
+
+    //戻るボタン押下時
+    override fun onBackPressed() {
+
+        AlertDialog.Builder(this)
+            .setTitle("警告")
+            .setMessage("トップへ戻りますか？（データは保存されています）")
+            .setPositiveButton("OK") { dialog, which ->
+                //OKの場合
+                // インテントの作成
+                val intent = Intent(this, MainActivity::class.java)
+                //タイマー破棄
+                timer.cancel()
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivity(intent)
+                }
+            }
+            .setNegativeButton("Cancel") { dialog, which ->
+                // Cancelの時は何もしない
+            }
+            .show()
 
     }
 
