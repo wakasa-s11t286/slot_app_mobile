@@ -1,9 +1,12 @@
 package com.example.slot_analysis_v2
 
+import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.ListView
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -36,6 +39,27 @@ class SubActivity3 : AppCompatActivity() {
 
         // ListViewに、生成したAdapterを設定
         listView.adapter = adapter
+
+        val button = findViewById<Button>(R.id.web)
+
+        button.setOnClickListener {
+
+            //端末のUIDを取得
+            var device :String = Settings.Secure.getString(this.getContentResolver(), Settings.System.ANDROID_ID);
+            var deviceparam:String = "/detail/$device"
+
+            // インテントの作成
+            val intent = Intent(this, SubActivity5::class.java)
+
+            //次画面に渡すパラメータを設定
+            intent.putExtra("DEVICE", deviceparam);
+
+            // WEBページへ遷移
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivity(intent)
+            }
+
+        }
 
 
     }

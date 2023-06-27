@@ -14,12 +14,17 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.json.responseJson
+import com.github.kittinunf.result.Result
+import org.json.JSONObject
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
+import android.provider.Settings
 
 
 //var countA = 0
@@ -436,6 +441,10 @@ class SubActivity1 : AppCompatActivity() {
                     //タイマー破棄
                     timer.cancel()
 
+                    //実践結果をサーバへ登録
+                    updateDataForServer(param)
+
+                    /**
                     // インテントの作成
                     val intent = Intent(this, MainActivity::class.java)
 
@@ -443,6 +452,7 @@ class SubActivity1 : AppCompatActivity() {
                     if (intent.resolveActivity(packageManager) != null) {
                         startActivity(intent)
                     }
+                    */
 
                 }
                 .setNegativeButton("Cancel") { dialog, which ->
@@ -703,6 +713,8 @@ class SubActivity1 : AppCompatActivity() {
         values.put("end", end)
 
         db.update("result",values,"id=$id",null)
+
+
     }
 
     private fun updateDetail(id:Int){
@@ -734,8 +746,7 @@ class SubActivity1 : AppCompatActivity() {
             regist = regist.drop(1)
             regist = regist.dropLast(1)
             regist = regist.replace("\\s".toRegex(), "")
-            Log.i("bbbbbb", charts.toString())
-            Log.i("aaaaa", regist)
+
             val values = ContentValues()
             values.put("time", time)
             values.put("chart", regist)
@@ -797,6 +808,139 @@ class SubActivity1 : AppCompatActivity() {
         return arrayList
     }
 
+    //APIでサーバへデータを登録
+    @SuppressLint("HardwareIds")
+    private fun updateDataForServer(id:Int) {
+
+        //サーバへ送る各パラメーター
+
+        //端末のUIDを取得
+        var device :String = Settings.Secure.getString(this.getContentResolver(), Settings.System.ANDROID_ID);
+
+        var total: Int = 0
+        var big: Int = 0
+        var regular:Int = 0
+        var cbig:  Int = 0
+        var cregular:  Int = 0
+        var koyaku1:  Int = 0
+        var koyaku2:  Int = 0
+        var chart:  String = ""
+
+
+        //実践結果テーブル検索
+        val cursor = db.query(
+            "result", arrayOf("id","date", "total","koyaku1","koyaku2","bb","rb","cherrybb","cherryrb"),
+            "id=$id",
+            null,
+            null,
+            null,
+            null
+        )
+        cursor.moveToFirst()
+
+        if(cursor.getInt(2) != null){
+            //DBの値がNULLでなければ、各カウンターを更新
+            total = cursor.getInt(2)
+            koyaku1 = cursor.getInt(3)
+            koyaku2 = cursor.getInt(4)
+            big = cursor.getInt(5)
+            regular = cursor.getInt(6)
+            cbig = cursor.getInt(7)
+            cregular = cursor.getInt(8)
+        }
+        cursor.close()
+
+        //詳細テーブルを検索
+        val cursor2 = db.query(
+            "detail", arrayOf("id","resultid", "time", "chart"),
+            "resultid=$id",
+            null,
+            null,
+            null,
+            null
+        )
+        cursor2.moveToFirst()
+
+        if(cursor2.getInt(3) != null){
+            //DBの値がNULLでなければ、チャート情報を取得
+            chart = cursor2.getString(3)
+        }
+        cursor2.close()
+
+        /// リクエストURL
+        val url = "https://wakabapg.pythonanywhere.com/updatedata"
+
+        val headers = hashMapOf(
+            "Content-Type" to "application/json"
+        )
+
+        //POSTするパラメーターを設定
+        val json = JSONObject()
+        json.put("device", device)
+        json.put("total", total)
+        json.put("big", big)
+        json.put("regular", regular)
+        json.put("cbig", cbig)
+        json.put("cregular", cregular)
+        json.put("koyaku1", koyaku1)
+        json.put("koyaku2", koyaku2)
+        json.put("chart", chart)
+
+        /// POSTリクエスト送信！
+        Fuel.post(url).header(headers).body(json.toString()).responseJson {
+                request, response, result ->
+
+            when (result) {
+                is Result.Failure -> {
+                    /// リクエスト失敗・エラー
+                    val ex = result.getException()
+                    Log.i("error", "Failure : $ex")
+                }
+                is Result.Success -> {
+                    /// レスポンス正常取得
+                    /// JSONObjectに変換
+                    val data = result.get().obj()
+                    Log.i("API結果", "Responsed JSON : "
+                            +data.toString())
+                    var deviceparam = data.getString("result")
+
+                    //ダイアログ表示
+                    AlertDialog.Builder(this)
+                        .setTitle("警告")
+                        .setMessage("終了した実践データを確認しますか？")
+                        .setPositiveButton("OK") { dialog, which ->
+                            //OKの場合
+                            // インテントの作成
+                            val intent = Intent(this, SubActivity5::class.java)
+
+                            //次画面に渡すパラメータを設定
+                            intent.putExtra("DEVICE", deviceparam);
+
+                            // WEBページへ遷移
+                            if (intent.resolveActivity(packageManager) != null) {
+                                startActivity(intent)
+                            }
+
+                        }
+                        .setNegativeButton("Cancel") { dialog, which ->
+                            // Cancelの時はTOPへ
+                            // インテントの作成
+                            val intent = Intent(this, MainActivity::class.java)
+
+                            // TOPへ遷移
+                            if (intent.resolveActivity(packageManager) != null) {
+                                startActivity(intent)
+                            }
+                        }
+                        .show()
+
+                }
+
+                else -> {}
+            }
+
+        }
+    }
 
 
 }
