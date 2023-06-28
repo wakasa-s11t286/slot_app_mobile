@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -25,6 +26,7 @@ import java.util.Date
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
 import android.provider.Settings
+import kotlin.math.ceil
 
 
 //var countA = 0
@@ -113,6 +115,9 @@ class SubActivity1 : AppCompatActivity() {
         val button2 = findViewById<Button>(R.id.button_2) // Buttonを取得
         //グラフボタン
         val button3 = findViewById<Button>(R.id.button_3) // Buttonを取得
+
+        //タイマーテキスト
+        val textTimer = findViewById<TextView>(R.id.timer)
 
         val textView1 = findViewById<TextView>(R.id.textView1)
         val textView2 = findViewById<TextView>(R.id.textView2)
@@ -480,16 +485,46 @@ class SubActivity1 : AppCompatActivity() {
         }
 
 
+        //カウントダウンタイマー
+        val countdownTimer = object : CountDownTimer(630000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                // 1秒ごとにテキストを更新
+                val second = ceil(millisUntilFinished / 1000.0).toInt()
+                val min = second / 60;
+                val sec = second % 60;
+                textTimer.text = min.toString() +"：" + sec.toString()
+            }
 
+            override fun onFinish() {
+                // 各Viewの終了設定
+                textTimer.text = "00:00"
+
+            }
+        }
+
+        //初期タイマー起動
+        //画面に初期値セット
+        textTimer.text = "10:30"
+        //タイマー作動
+        countdownTimer.start()
 
         //定期実行（10.5分おきに詳細(差枚）を記録）
         timer.scheduleAtFixedRate(630000, 630000) {
             Log.i("Timer","更新起動")
+            //タイマーストップ
+            countdownTimer.cancel()
+            //画面に初期値セット
+            textTimer.text = "10:30"
+            //タイマー作動
+            countdownTimer.start()
+
             updateDetail(param)
         }
         //Timer().scheduleAtFixedRate(0, 15000) {
         //    updateDetail(param)
         //}20000 420000 630000
+
+
 
 
 
