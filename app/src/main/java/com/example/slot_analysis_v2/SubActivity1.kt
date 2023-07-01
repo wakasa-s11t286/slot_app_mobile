@@ -26,19 +26,28 @@ import java.util.Date
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
 import android.provider.Settings
+import android.view.View
+import android.widget.ProgressBar
+import java.util.Objects
 import kotlin.math.ceil
+import kotlin.math.roundToInt
+import android.view.WindowManager
 
 
-//var countA = 0
-//var textViewA: TextView? = null
-//var editTextA: EditText? = null
-//var buttonA: Button? = null
 class SubActivity1 : AppCompatActivity() {
 
     private lateinit var helper: DBOpenHelper
     private lateinit var db: SQLiteDatabase
 
-    private val timer = Timer()
+    //デバック用(30秒)
+    private val timeCount :Long = 630000
+    //private val timeCount :Long = 30000
+
+    private val timer = Timer("BasicTimer")
+
+    private lateinit var countdownTimer: CountDownTimer //ここを追加
+
+    private var param: Int = 0
 
     //トータルG
     private var count0: Int = 0
@@ -62,6 +71,9 @@ class SubActivity1 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sub1)
 
+        //アプリ起動中はスリープ不可
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         //DB（DBが存在しない場合は新規にファイルに作成）
         helper = DBOpenHelper(applicationContext)
         db = helper.writableDatabase
@@ -70,7 +82,7 @@ class SubActivity1 : AppCompatActivity() {
 
         //前画面（続きからor新規）で選択されたIDパラメータを受け取る
         val intent = intent
-        val param: Int = intent.getIntExtra("PARAMETER",0)
+         param = intent.getIntExtra("PARAMETER",0)
 
         //DBの値で復元する
         initialCount(param)
@@ -449,16 +461,6 @@ class SubActivity1 : AppCompatActivity() {
                     //実践結果をサーバへ登録
                     updateDataForServer(param)
 
-                    /**
-                    // インテントの作成
-                    val intent = Intent(this, MainActivity::class.java)
-
-                    // TOPへ遷移
-                    if (intent.resolveActivity(packageManager) != null) {
-                        startActivity(intent)
-                    }
-                    */
-
                 }
                 .setNegativeButton("Cancel") { dialog, which ->
                     // Cancelの時は何もしない
@@ -486,7 +488,7 @@ class SubActivity1 : AppCompatActivity() {
 
 
         //カウントダウンタイマー
-        val countdownTimer = object : CountDownTimer(630000, 1000) {
+        countdownTimer = object : CountDownTimer(timeCount, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 // 1秒ごとにテキストを更新
                 val second = ceil(millisUntilFinished / 1000.0).toInt()
@@ -504,29 +506,28 @@ class SubActivity1 : AppCompatActivity() {
 
         //初期タイマー起動
         //画面に初期値セット
-        textTimer.text = "10:30"
+        textTimer.text = timeToText(timeCount)
         //タイマー作動
         countdownTimer.start()
 
+
         //定期実行（10.5分おきに詳細(差枚）を記録）
-        timer.scheduleAtFixedRate(630000, 630000) {
-            Log.i("Timer","更新起動")
-            //タイマーストップ
-            countdownTimer.cancel()
-            //画面に初期値セット
-            textTimer.text = "10:30"
-            //タイマー作動
-            countdownTimer.start()
+        setTimer(param)
 
-            updateDetail(param)
-        }
-        //Timer().scheduleAtFixedRate(0, 15000) {
-        //    updateDetail(param)
-        //}20000 420000 630000
+    }
 
+    //アプリが見えなくなった時のイベント
+    override fun onStop() {
+        super.onStop()
+        //タイマー破棄
+        timer.cancel()
 
+    }
 
-
+    //アプリがSTOPから復帰した時のイベント
+    override fun onRestart() {
+        super.onRestart()
+        setTimer(param)
 
     }
 
@@ -554,6 +555,34 @@ class SubActivity1 : AppCompatActivity() {
     }
 
 
+    private fun setTimer(param: Int){
+
+        //定期実行（10.5分おきに詳細(差枚）を記録）
+        timer.scheduleAtFixedRate(timeCount, timeCount) {
+
+            //タイマーテキスト
+            val textTimer = findViewById<TextView>(R.id.timer)
+
+            Log.i("Timer","更新起動")
+            //タイマーストップ
+            countdownTimer.cancel()
+            //画面に初期値セット
+            textTimer.text = timeToText(timeCount)
+            //タイマー作動
+            countdownTimer.start()
+
+            updateDetail(param)
+
+            setChartDataDisplay(param)
+
+        }
+    }
+    private fun timeToText(time:Long): String {
+        val second = ceil(time / 1000.0).toInt()
+        val min = second / 60;
+        val sec = second % 60;
+        return "$min：$sec"
+    }
 
     fun getSettingA(rate :Double): String {
         var setting = if(rate <= 5.67){
@@ -760,15 +789,26 @@ class SubActivity1 : AppCompatActivity() {
         val charts = getDetailRecord(id)
 
         //現在の差枚を算出
+        //推測でリプレイ、ピエロ、ベルの値を算出
+        //リプレイ回数(1/7.3)
+        val replay  = (count0 / 7.3).roundToInt()
+        //ピエロ回数(1/ 1024.0)
+        val piero  = (count0 / 1024.0).roundToInt()
+        //ベル回数(1/ 1024.0)
+        val bell  = (count0 / 1024.0).roundToInt()
+
+
         //投資枚数
-        val investment = count0 * 3
+        val investment = (count0-replay) * 3
         //回収枚数
         val collect1 = countA * 8
         val collect2 = countB * 1
         val collect3 = (countC + countE) * 240
         val collect4 = (countD + countF) * 96
+        val collect5 = piero * 10
+        val collect6 = bell * 14
         //差枚
-        val output = (collect1 + collect2 +collect3 + collect4) - investment
+        val output = (collect1 + collect2 +collect3 + collect4 + collect5 + collect6) - investment
 
         if (charts != null) {
             if(charts.last() == output.toString()){
@@ -786,7 +826,27 @@ class SubActivity1 : AppCompatActivity() {
             values.put("time", time)
             values.put("chart", regist)
 
+            Log.i("更新結果",regist)
             db.update("detail",values,"resultid=$id",null)
+        }
+
+    }
+
+    private fun setChartDataDisplay(id:Int){
+
+        val chartdataView = findViewById<TextView>(R.id.output)
+
+        val charts = getDetailRecord(id)
+
+        if (charts != null) {
+
+            var regist = charts.toString()
+            regist = regist.drop(1)
+            regist = regist.dropLast(1)
+            regist = regist.replace("\\s".toRegex(), "")
+
+            chartdataView.text = regist
+
         }
 
     }
@@ -817,6 +877,8 @@ class SubActivity1 : AppCompatActivity() {
 
         // 忘れずに！
         cursor.close()
+
+        setChartDataDisplay(id)
     }
 
     private fun getDetailRecord(param:Int): ArrayList<String>? {
@@ -846,6 +908,11 @@ class SubActivity1 : AppCompatActivity() {
     //APIでサーバへデータを登録
     @SuppressLint("HardwareIds")
     private fun updateDataForServer(id:Int) {
+
+        // ProgressBarの取得
+        val progressBar = findViewById<ProgressBar>(R.id.progress3)
+        //ローディングスタート
+        progressBar.visibility = View.VISIBLE
 
         //サーバへ送る各パラメーター
 
@@ -930,6 +997,24 @@ class SubActivity1 : AppCompatActivity() {
                     /// リクエスト失敗・エラー
                     val ex = result.getException()
                     Log.i("error", "Failure : $ex")
+                    //ローディング了
+                    progressBar.visibility = View.GONE
+
+                    //ダイアログ表示
+                    AlertDialog.Builder(this) // FragmentではActivityを取得して生成
+                        .setTitle("エラー")
+                        .setMessage("サーバへのデータ送信に失敗しました")
+                        .setPositiveButton("OK") { dialog, which ->
+                            // OKでTOPへ
+                            // インテントの作成
+                            val intent = Intent(this, MainActivity::class.java)
+
+                            // TOPへ遷移
+                            if (intent.resolveActivity(packageManager) != null) {
+                                startActivity(intent)
+                            }
+                        }
+                        .show()
                 }
                 is Result.Success -> {
                     /// レスポンス正常取得
@@ -938,6 +1023,9 @@ class SubActivity1 : AppCompatActivity() {
                     Log.i("API結果", "Responsed JSON : "
                             +data.toString())
                     var deviceparam = data.getString("result")
+
+                    //ローディング了
+                    progressBar.visibility = View.GONE
 
                     //ダイアログ表示
                     AlertDialog.Builder(this)
@@ -971,7 +1059,10 @@ class SubActivity1 : AppCompatActivity() {
 
                 }
 
-                else -> {}
+                else -> {
+                    //ローディング了
+                    progressBar.visibility = View.GONE
+                }
             }
 
         }

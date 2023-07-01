@@ -1,12 +1,15 @@
 package com.example.slot_analysis_v2
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelError
@@ -49,7 +52,9 @@ class SubActivity4 : AppCompatActivity() {
 
         if (resultchart != null) {
             getMyAPI(resultchart)
+
         }
+
 
 
         //戻るボタン押下時
@@ -71,6 +76,9 @@ class SubActivity4 : AppCompatActivity() {
     //APIコール
     private fun getMyAPI(list:ArrayList<String>) {
 
+        // ProgressBarの取得
+        val progressBar = findViewById<ProgressBar>(R.id.progress2)
+
         //配列を文字列に変換
         var chartTxt = list.toString()
         chartTxt = chartTxt.drop(1)
@@ -91,16 +99,30 @@ class SubActivity4 : AppCompatActivity() {
             "Content-Type" to "application/json"
         )
 
-        /// GETリクエスト送信！
+        //ローディングスタート
+        progressBar.visibility = View.VISIBLE
 
+        /// GETリクエスト送信！
         Fuel.get(url).header(headers).responseJson {
                 request, response, result ->
 
             when (result) {
+
                 is Result.Failure -> {
                     /// リクエスト失敗・エラー
                     val ex = result.getException()
                     Log.i("error", "Failure : $ex")
+
+                    //ダイアログ表示
+                    AlertDialog.Builder(this)
+                        .setTitle("通信エラー")
+                        .setMessage("サーバとの通信に失敗しました。ネットワーク環境を確認してください。")
+                        .setPositiveButton("OK") { dialog, which ->
+
+                        }
+                        .show()
+                    //ローディング了
+                    progressBar.visibility = View.GONE
                 }
                 is Result.Success -> {
                     /// レスポンス正常取得
@@ -115,12 +137,31 @@ class SubActivity4 : AppCompatActivity() {
                     }
                     //グラフ作成
                     createChart(resultList, chartTxt)
+                    //ローディング了終了
+                    progressBar.visibility = View.GONE
                 }
 
-                else -> {}
+                else -> {
+                    //ローディング了終了
+                    progressBar.visibility = View.GONE
+                }
             }
 
         }
+    }
+
+    //戻るボタン押下時
+    override fun onBackPressed() {
+
+        //ダイアログ表示
+        AlertDialog.Builder(this)
+            .setTitle("警告")
+            .setMessage("戻るボタンより戻ってください")
+            .setPositiveButton("OK") { dialog, which ->
+
+            }
+            .show()
+
     }
 
 

@@ -237,7 +237,7 @@
         android:layout_width="63dp"
         android:layout_height="30dp"
         android:layout_marginStart="412dp"
-        android:layout_marginTop="212dp"
+        android:layout_marginTop="204dp"
         android:backgroundTint="#F4C639"
         android:text="終了"
         android:textSize="6sp"
@@ -249,7 +249,7 @@
         android:layout_width="67dp"
         android:layout_height="28dp"
         android:layout_marginStart="412dp"
-        android:layout_marginTop="244dp"
+        android:layout_marginTop="236dp"
         android:backgroundTint="#8BC34A"
         android:text="グラフ"
         android:textSize="5sp"
@@ -437,15 +437,41 @@
 
     <TextView
         android:id="@+id/timer"
-        android:layout_width="83dp"
-        android:layout_height="18dp"
-        android:layout_marginStart="216dp"
-        android:layout_marginTop="272dp"
+        android:layout_width="64dp"
+        android:layout_height="23dp"
+        android:layout_marginStart="112dp"
+        android:layout_marginTop="264dp"
         android:text="00:00"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="10sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/output"
+        android:layout_width="295dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="184dp"
+        android:layout_marginTop="264dp"
+        android:text="0,100,-100,130,100,-100,130,100,-100,130,100,-100,130,100,-100,130,100,-100,130,100,-100,130,100,-100,130,100,-100,130,100,-100,130"
+        android:textAlignment="viewStart"
+        android:textColor="#FFFFFF"
+        android:textSize="8sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progress3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.316"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.44"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

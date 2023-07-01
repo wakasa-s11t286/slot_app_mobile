@@ -14,68 +14,65 @@
         android:text="ジャグアナモバイル"
         android:textAlignment="center"
         android:textSize="24sp"
-        tools:layout_editor_absoluteX="32dp"
-        tools:layout_editor_absoluteY="30dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.037" />
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="224dp"
-        android:layout_height="135dp"
-        android:layout_marginStart="39dp"
-        android:layout_marginTop="99dp"
-        android:layout_marginEnd="39dp"
-        android:layout_marginBottom="342dp"
+        android:layout_width="154dp"
+        android:layout_height="117dp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintTop_toTopOf="@id/textView"
+        app:layout_constraintVertical_bias="0.155"
         app:srcCompat="@drawable/ec2e96d8683dd78aa6855f6aed1d9558" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="246dp"
         android:layout_height="80dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="240dp"
-        android:layout_marginEnd="85dp"
         android:onClick="onClick"
         android:text="新規スタート"
         android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/imageView"
+        app:layout_constraintVertical_bias="0.37" />
 
     <Button
         android:id="@+id/button3"
         android:layout_width="238dp"
         android:layout_height="85dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="404dp"
-        android:layout_marginEnd="93dp"
         android:onClick="onClick3"
         android:text="履歴"
         android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.473"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/button2"
+        app:layout_constraintVertical_bias="0.778" />
 
     <Button
         android:id="@+id/button2"
         android:layout_width="238dp"
         android:layout_height="85dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="320dp"
-        android:layout_marginEnd="93dp"
         android:onClick="onClick2"
         android:text="続きから"
         android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/button"
+        app:layout_constraintVertical_bias="0.441" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
